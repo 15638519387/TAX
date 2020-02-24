@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.SurveyDao">
+	<select id="selectByCondition" parameterType="map" resultType="map">
+		select * from service_survy
+		<where>
+			<if test="ss_title!=null and ss_title!=''">
+				and ss_title like concat('%',#{ss_title},'%')
+			</if>
+			<if test="ss_starttime!=null and ss_starttime!=''">
+				and ss_starttime &gt;= #{ss_starttime}
+			</if>
+			<if test="ss_endtime!=null and ss_endtime!=''">
+				and ss_starttime &lt;= #{ss_endtime}
+			</if>
+			<if test="ss_state!=null and ss_state!=''">
+				and ss_state = #{ss_state}
+			</if>
+		</where>
+		order by ss_applytime desc
+	</select>
+	<select id="selectSingleById" resultType="map">
+		select * from service_survy where ss_id=#{id}
+	</select>
+	<update id="updateState" parameterType="map">
+		update service_survy set ss_state=#{arg1} where ss_id=#{arg0}
+	</update>
+	
+	<delete id="delete">
+		delete from service_survy where ss_id=#{ss_id}
+	</delete>
+	
+	<insert id="insert" parameterType="map">
+		<selectKey order="AFTER" keyProperty="ss_id"  resultType="int">
+			select max(ss_id) from service_survy
+		</selectKey>
+		insert into service_survy(ss_title,ss_starttime,ss_endtime,ss_state,ss_dept,ss_applyer,ss_applytime) 
+		values(#{ss_title},STR_TO_DATE(#{ss_starttime},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#{ss_endtime},'%Y-%m-%d %H:%i:%s'),#{ss_state},#{ss_dept},#{ss_applyer},STR_TO_DATE(#{ss_applytime},'%Y-%m-%d %H:%i:%s'))
+	</insert>
+
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.dao.ComplainReplyDao">
+	<select id="selectAll">
+	
+	</select>
+	<insert id="insert" parameterType="map">
+		insert into complain_reply(comp_id,replyer,reply_dept,reply_time,reply_content) values(#{comp_id},#{replyer},#{reply_dept},#{reply_time},#{reply_content})
+	</insert>
+	<update id="update" parameterType="map">
+		
+	</update>
+</mapper>

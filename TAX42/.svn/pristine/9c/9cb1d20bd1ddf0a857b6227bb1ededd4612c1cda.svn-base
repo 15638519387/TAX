@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.UserDao">
+     
+     <!-- 进行查询用户 -->
+     <select id = "userList" resultType="map">
+         select id , name ,account, dept ,gender , email from user 
+         <where>
+            <if test="name != null and name != ''">
+                name like '%${name}%'
+            </if>
+         </where>
+         order by id
+     </select>
+      
+      <!--使用id查询用户 -->    
+     <select id = "idList" resultType="map">
+        select * from user 
+           <if test="arr!=null">
+	          where id in
+	            <foreach collection="arr" item = "id" separator = "," open="(" close = ")">
+	                   #{id}
+	            </foreach>
+           </if>
+         order by id
+     </select>
+     <!-- 查询用户id -->
+     <select id = "userId" resultType="int">
+         select id from user where account = #{account}
+     </select>
+     
+     <!-- 使用id查询用户 -->
+     <select id = "userUp" resultType ="map">
+         select * from user where id = #{id}
+     </select>
+     <!-- 进行编辑前的数据 -->
+     <select id = "queryList" resultType="map">
+         	select  k1.*,k2.name  role_name from user k1 ,
+			(select t1.role_id , t1.user_id ,t2.name,t2.state	from user_role t1 , role t2  where t1.role_id = t2.role_id) k2
+			where k1.id=k2.user_id and k1.id= #{id}
+     </select>
+     
+     <!-- 查询有效的全部角色 -->
+     <select id = "roleName" resultType = "map">
+         select role_id , name from role where  state = 1  order by role_id
+     </select>
+     
+     <!-- 修改用户 -->
+     <update id = "editUser">
+        
+        update user set name=#{map.name} , dept=#{map.dept} , account =#{map.account},password = #{map.password} ,
+        <if test="map.headImg!=null and map.headImg != ''">
+            headImg = #{map.headImg} ,
+        </if>
+        email =#{map.email} ,mobile = #{map.mobile} , birthday = STR_TO_DATE(#{map.birthday},'%Y-%m-%d'),
+        <if test=" map.state != null and map.state != ''">
+          state=#{map.state},
+        </if>
+          memo=#{map.memo},
+          gender = #{map.gender}
+          where id = #{id}
+     </update> 
+     
+     <!-- 修改用户角色 -->
+     <update id = "editRole">
+        update user_role set role_id =#{arg0}  where user_id =#{arg1} 
+     </update> 
+     
+     <!-- 添加用户 -->
+      <insert id = "addUser">
+         insert into user (name , dept , account ,password ,headImg ,gender ,email ,
+         mobile , birthday , state , memo)values(
+         #{name},#{dept},#{account},#{password},#{headImg},
+         #{gender},#{email},#{mobile},STR_TO_DATE(#{birthday},'%Y-%m-%d'),#{state},#{memo}
+         )
+     </insert> 
+     
+     <!-- 导入添加用户 -->
+      <insert id = "addUsers">
+         insert into user (name , dept , account ,password ,headImg ,gender ,email ,
+         mobile , birthday , state , memo)values
+	            <foreach collection="list" item = "map" separator = "," >
+			         (
+			         #{map.name},#{map.dept},#{map.account},#{map.password},#{map.headImg},
+			         #{map.gender},#{map.email},#{map.mobile},STR_TO_DATE(#{map.birthday},'%Y-%m-%d'),#{map.state},#{map.memo}
+			         )
+	            </foreach>
+     </insert> 
+     
+     <!-- 添加用户角色 -->
+      <insert id = "addRole">
+         insert into user_role values (#{arg1},#{arg0});
+     </insert> 
+     
+     <!-- 删除用户 -->
+     <delete id = "delUser">
+         delete from user 
+         <where>
+             <if test= "arg0 != null and arg0 != ''"> 
+                id = #{arg0}
+             </if>
+             <if test = "arg1 != null" >
+                 id in 
+                <foreach collection="arg1" item = "id" separator = "," open="(" close = ")">
+                   #{id}
+                </foreach>
+             </if>
+         </where>
+     </delete>
+     
+     <!-- 删除用户角色 -->
+     <delete id = "delUserRole">
+         delete from user_role 
+         <where>
+             <if test= "arg0 != null and arg0 != ''"> 
+                user_id = #{arg0}
+             </if>
+             <if test = "arg1 != null" >
+                 user_id in 
+                <foreach collection="arg1" item = "id" separator = "," open="(" close = ")">
+                   #{id}
+                </foreach>
+             </if>
+         </where>
+     </delete>
+     
+     
+     
+</mapper>

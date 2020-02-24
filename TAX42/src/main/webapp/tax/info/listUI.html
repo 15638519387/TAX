@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript" src="../../js/jquery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/hxjzg.js"></script>
+<script type="text/javascript" src="../../js/my_info.js"></script>
+<link href="../../css/skin1.css" rel="stylesheet" type="text/css" />
+<title>信息发布管理</title>
+<script type="text/javascript">
+	//当页面加载后，异步请求数据，动态创建列表
+	$(function() {
+		//初始化页面
+		initPage();
+		//上一页、下一页的单击事件
+		$("#btnPrePage,#btnNextPage").click(function() {
+			var txt = $(this).html();
+			var pageIndex = Number($("#currentPage").html());
+			var totalPage = Number($("#totalPage").html());
+			var pageSize = 10;
+			if (txt == "上一页") {
+				pageIndex = pageIndex - 1;
+				if (pageIndex < 1) {
+					pageIndex = 1;
+				}
+			}else{
+				pageIndex=pageIndex+1;
+				if (pageIndex>totalPage) {
+					pageIndex=totalPage;
+				}
+			}
+			var searchTitle = $("#txtSearchTitle").val();
+			//获取当前项目的名称（路径）
+			var contextPath = "/" + window.location.pathname.split("/")[1];
+			//拼接要异步请求的路径
+			var url = contextPath + "/info/select?pageIndex=" + pageIndex
+					+ "&pageSize=" + pageSize + "&searchTitle=" + searchTitle;
+			getData(url);
+		});
+		//Go按钮的点击事件
+		$("#btnGo").click(function(){
+			var pageIndex=$("#txtGoPage").val();
+			if (pageIndex=="") {
+				return;
+			}
+			var pageSize=10;
+			var totalPage = Number($("#totalPage").html());
+			if (pageIndex < 1) {
+				pageIndex = 1;
+			}
+			if (pageIndex>totalPage) {
+				pageIndex=totalPage;
+			}
+			var searchTitle = $("#txtSearchTitle").val();
+			//获取当前项目的名称（路径）
+			var contextPath = "/" + window.location.pathname.split("/")[1];
+			//拼接要异步请求的路径
+			var url = contextPath + "/info/select?pageIndex=" + pageIndex
+					+ "&pageSize=" + pageSize + "&searchTitle=" + searchTitle;
+			getData(url);
+		});
+		//搜索
+		$("#btnSearch").click(initPage);
+	});
+	function initPage(){
+		var pageIndex = 1;
+		var pageSize = 10;
+		var searchTitle = $("#txtSearchTitle").val();
+		//获取当前项目的名称（路径）
+		var contextPath = "/" + window.location.pathname.split("/")[1];
+		//拼接要异步请求的路径
+		var url = contextPath + "/info/select?pageIndex=" + pageIndex
+				+ "&pageSize=" + pageSize + "&searchTitle=" + searchTitle;
+		getData(url);
+	}
+
+	function getData(url) {
+		$.get(url,function(data, status) {
+			if (status == "success") {
+				//首先移除   除了第一行以外的    所有数据
+				$("#tblInfo tr:not(:first)").remove();
+				//处理返回的json数据
+				$.each(data,function(k, v) {
+						//用于存储一行数据
+						var content = "";
+						//设置页码
+						if (k == 0) {
+							$("#currentPage").html(v.currentPage);
+							$("#totalPage").html(v.totalPage);
+							$("#totalRecord").html(v.totalRecord);
+							return true;//相当于continue
+						} else if (k % 2 == 0) {
+							//然后拼接表格的内容
+							content += '<tr bgcolor="f8f8f8">';
+						} else {
+							content += '<tr>';
+						}
+						content += '<td align="center"><input type="checkbox" name="selectedRow" value="'+v.info_id+'" /></td>'
+								+ '<td align="center">'
+								+ v.title + '</td>';
+						if (v.type == 'tzgg') {
+							content += '<td align="center">通知公告</td>';
+						} else if (v.type == 'zcsd') {
+							content += '<td align="center">政策速递</td>';
+						} else if (v.type == 'nszd') {
+							content += '<td align="center">纳税指导</td>';
+						}
+						content += '<td align="center">'
+								+ v.creator
+								+ '</td>'
+								+ '<td align="center">'
+								+ new Date(v.create_time).toLocaleString("chinese",{hour12 : false})
+								+ '</td>';
+						if (v.state == 0) {
+							content += '<td align="center">停用</td>'
+									+ '<td align="center">'
+									+ '<a href="javascript:void(0);" info_id='+v.info_id+' state='+v.state+' onclick="doUpdateState(this)">发布</a>&nbsp;&nbsp;';
+						} else {
+							content += '<td align="center">发布</td>'
+									+ '<td align="center">'
+									+ '<a href="javascript:void(0);" info_id='+v.info_id+' state='+v.state+' onclick="doUpdateState(this)">停用</a>&nbsp;&nbsp;';
+						}
+						content += '<a href="javascript:void(0);" onclick="doEdit('
+								+ v.info_id
+								+ ')">编辑</a>&nbsp;&nbsp;'
+								+ '<a href="javascript:void(0);" onclick="doDelete('
+								+ v.info_id
+								+ ')">删除</a></td>'
+								+ '</tr>';
+						//一行一行的拼接数据
+						$("#tblInfo").append(content);
+					});	
+				$("#txtGoPage").val("");
+			}
+		});
+	}
+</script>
+</head>
+<body class="rightBody">
+	<form name="form1" action="" method="post">
+		<div class="p_d_1">
+			<div class="p_d_1_1">
+				<div class="content_info">
+					<div class="c_crumbs">
+						<div>
+							<b></b><strong>信息发布管理</strong>
+						</div>
+					</div>
+					<div class="search_art">
+						<ul>
+							<li>信息标题：<input type="text" name="txtSearchTitle" value=""
+								id="txtSearchTitle" class="s_text" style="width: 160px;" />
+							</li>
+							<li><input type="button" id="btnSearch" class="s_button"
+								value="搜 索" /></li>
+							<li style="float: right;"><input type="button" value="新增"
+								id="btnAdd" class="s_button" onclick="doAdd()" />&nbsp; <input
+								type="button" id="btnDeleteAll" value="删除" class="s_button"
+								onclick="doDeleteAll()" />&nbsp;</li>
+						</ul>
+					</div>
+
+					<div class="t_list" style="margin: 0px; border: 0px none;">
+						<table width="100%" border="0" id="tblInfo">
+							<tr class="t_tit">
+								<td width="30" align="center"><input type="checkbox"
+									id="selectAll" onclick="doSelectAll()"/></td>
+								<td align="center">信息标题</td>
+								<td width="120" align="center">信息分类</td>
+								<td width="120" align="center">创建人</td>
+								<td width="140" align="center">创建时间</td>
+								<td width="80" align="center">状态</td>
+								<td width="120" align="center">操作</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="c_pate" style="margin-top: 5px;">
+					<table width="100%" class="pageDown" border="0" cellspacing="0"
+						cellpadding="0">
+						<tr>
+							<td align="right">总共 <span id="totalRecord"
+								style="color: red;"></span> 条记录，当前第 <span id="currentPage"
+								style="color: red;"></span> 页，共 <span id="totalPage"
+								style="color: red;"></span> 页 &nbsp;&nbsp; <a id="btnPrePage"
+								href="javascript:void(0)">上一页</a>&nbsp;&nbsp;<a id="btnNextPage"
+								href="javascript:void(0)">下一页</a> 到&nbsp;<input type="text"
+								style="width: 30px;" id="txtGoPage" min="1" max="" value="" />&nbsp;<input
+								id="btnGo" type="button" value="Go" /> &nbsp;&nbsp;
+							</td>
+						</tr>
+					</table>
+				</div>
+
+			</div>
+		</div>
+
+
+
+
+	</form>
+
+</body>
+</html>

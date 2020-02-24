@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace = "com.soft.dao.Subscribe_AllDao">
+
+<!-- 处理用户预约时的查询 -->
+<select id="query" resultType="map">
+SELECT a.service_id ,a.subscriber,a.sub_time,a.sub_place,a.sub_desc,b.matter_no,b.matter_name,b.matter_dept,b.matter_user ,c.mobile FROM subscribe_service a, subscribe_matter b ,user c WHERE a.matter=.b.matter_no and a.service_id= #{id} and b.matter_no= #{no}  and c.name=a.subscriber
+</select>
+
+<!-- 添加处理回复 -->
+<insert id="add" >
+INSERT into subscribe_reply(service_id,reply_content,replyer,dept)values(#{service_id},#{content},#{name},#{dept})
+</insert>
+
+<!-- 修改用户预约的状态 成功或者失败 -->
+<update id="update" >
+update  subscribe_service set sub_state =#{state} where service_id=#{service_id}
+</update>
+
+
+<!-- 查询所有用户和部门 -->
+<select id="queryDept" resultType="com.soft.entity.Sub_Dept">
+select name,dept from user
+</select>
+
+<!-- 添加预约事项 -->
+<insert id="addMatter" >
+
+INSERT into subscribe_matter (matter_no,matter_name,matter_dept,matter_user,matter_time,matter_state)VALUES(#{matter_no},#{matter_name},#{matter_dept},#{matter_user},#{matter_time},#{matter_state})
+</insert>
+
+<!-- 删除预约事项 -->
+<delete id="delAll">
+delete from subscribe_matter where matter_id=#{id}
+</delete>
+
+
+<!-- 停用（修改）事项 -->
+<update id="tq" >
+update  subscribe_matter set matter_state =#{gai} where matter_id=#{quan}
+</update>
+
+<!-- 编辑修改预约事项 -->
+<update id="updateMatter" >
+update  subscribe_matter set matter_no =#{matter_no},matter_name=#{matter_name},matter_dept=#{matter_dept},matter_user=#{matter_user} ,matter_time=#{matter_time} where matter_id=#{sub_needId}
+</update>
+
+<!-- 动态查询预约事项 -->
+<select id="queryMatterByLike" resultType="map">
+select matter_id,matter_no,matter_name,matter_dept,matter_user,date_format(matter_time,'%Y-%m-%d %H:%i:%s') matter_time,matter_state  from subscribe_matter
+ <where>
+ <if test="name != null and name != ''">
+      and matter_name LIKE '%${name }%'
+ </if>
+ <if test="number != null and number != ''">
+    and  matter_no  = #{number }
+ </if>
+ <if test="dept != null and dept != '' " >
+      and matter_dept = #{dept }
+ </if>
+
+ </where>
+ order by matter_no
+</select>
+
+
+<!-- 查询预约事项 -->
+<select id="queryMatterNo" resultType="map">
+select  * from subscribe_matter GROUP BY matter_no HAVING matter_state = 0
+</select>
+
+
+<!-- 用户添加预约 -->
+<insert id="addSub_Service" >
+
+INSERT into subscribe_service (subscriber,matter,sub_time,sub_place,sub_desc,sub_state)
+VALUES(#{subscriber},#{matter_id},#{sub_time},#{sub_place},#{sub_desc},'2')
+</insert>
+
+<!-- 查询对应人的所有预约 -->
+<select id="queryShowMySub" resultType="map">
+select service_id,subscriber,matter,date_format(sub_time,'%Y-%m-%d %H:%i:%s') sub_time,sub_place,sub_desc,sub_state from subscribe_service where subscriber= #{sub }
+</select>
+
+<!-- 查询用户预约详细信息 -->
+<select id="queryMySubInfo" resultType="map">
+select t.*,c.reply_content from (select a.service_id,date_format(a.sub_time,'%Y-%m-%d %H:%i:%s') sub_time,a.sub_place,a.sub_desc,a.sub_state,a.matter,b.matter_name
+from subscribe_service a , subscribe_matter b where  a.matter=b.matter_no  and a.service_id=#{id} ) t LEFT JOIN subscribe_reply c on t.service_id=c.service_id 
+</select>
+
+
+<select id="selectMatter_no" resultType="map">
+select matter_no from subscribe_matter   where matter_state = 0 ORDER BY matter_no
+</select>
+
+</mapper>

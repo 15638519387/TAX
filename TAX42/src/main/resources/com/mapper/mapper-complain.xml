@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.dao.ComplainDao">
+	<insert id="insert" parameterType="map">
+		insert into
+		complain(comp_company,comp_name,comp_mobile,is_NM,comp_time,comp_title,to_comp_name,to_comp_dept,comp_content,state)
+		values(#{comp_company},#{comp_name},#{comp_mobile},#{is_NM},#{comp_time},#{comp_title},#{to_comp_name},#{to_comp_dept},#{comp_content},#{state})
+	</insert>
+	<update id="update" parameterType="map">
+		update complain set
+		comp_company=#{comp_company},comp_name=#{comp_name},comp_mobile=#{comp_mobile},is_NM=#{is_NM},comp_time=#{comp_time},comp_title=#{comp_title},to_comp_name=#{to_comp_name},to_comp_dept=#{to_comp_dept},comp_content=#{comp_content},memo=#{memo},state=#{state}
+		where comp_id=#{comp_id}
+	</update>
+	<update id="updateState">
+		update complain set state=#{arg1} where comp_id=#{arg0}
+	</update>
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from complain where
+		comp_id=#{id}
+	</delete>
+	<select id="selectAll" resultType="map">
+		select * from complain order
+		by comp_time desc
+	</select>
+	<select id="selectSingle" resultType="map"
+		parameterType="java.lang.Integer">
+		SELECT t1.*,t2.`replyer`,t2.`reply_dept`,t2.`reply_content` FROM complain t1 
+		LEFT JOIN complain_reply t2 
+		ON t1.comp_id = t2.comp_id 
+		WHERE t1.comp_id = #{comp_id}
+	</select>
+	<select id="selectByCondition" resultType="map" parameterType="map">
+		select * from complain
+		<where>
+			<if test="comp_title!=null and comp_title!=''">
+				and comp_title like concat('%',#{comp_title},'%')
+			</if>
+			<if test="startTime!=null and startTime!=''">
+				and comp_time &gt;= #{startTime}
+			</if>
+			<if test="endTime!=null and endTime!=''">
+				and comp_time &lt;= #{endTime}
+			</if>
+			<if test="state!=null and state!=''">
+				and state=#{state}
+			</if>
+			<if test="comp_name!=null and comp_name!=''">
+				and comp_name=#{comp_name}
+			</if>
+		</where> 
+		order by comp_time desc
+	</select>
+	
+	<select id="loadPerson" resultType="map" parameterType="java.lang.String">
+		select * from user where state = 1
+		<if test="_parameter!=null and _parameter!=''">
+			and dept= #{dept}
+		</if>
+	</select>
+	
+	<select id="calc" resultType="map">
+		
+		SELECT to_comp_dept dept,COUNT(*) count FROM complain
+		GROUP BY  to_comp_dept;
+	</select>
+</mapper>

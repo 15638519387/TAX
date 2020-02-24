@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 加载jdbc配置文件 -->  
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+     <!-- 配置数据源 -->
+    <bean id="dat" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${oracle.driver}"/>
+        <property name="jdbcUrl" value="${oracle.url}"/>
+        <property name="user" value="${oracle.user}"/>
+        <property name="password" value="${oracle.pass}"/>
+    </bean>
+    
+    <!-- 映射mapper.xml文件  -->
+    <bean id = "sq" class = "org.mybatis.spring.SqlSessionFactoryBean">
+       <!-- 引入myBatis配置文件中setting -->
+       <property name="configLocation" value="classpath:myBatis-config.xml"/>
+       <!-- 注入jdbc数据库 -->
+       <property name = "dataSource" ref = "dat"></property>
+       <!--配置mybatis映射文件  -->
+       <property name = "mapperLocations" value = "classpath:com/mapper/*.xml"/>
+    </bean>
+    
+    <!-- 映射mybatis接口文件 -->
+    <bean class = "org.mybatis.spring.mapper.MapperScannerConfigurer">
+      <property name = "basePackage" value = "com.soft.dao"/>
+      <property name = "sqlSessionFactoryBeanName" value = "sq"/>
+    </bean>
+    
+</beans>

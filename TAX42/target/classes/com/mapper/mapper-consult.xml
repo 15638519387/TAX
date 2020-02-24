@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.ConsultDao">
+
+	<!-- 咨询数据插入 -->
+	<insert id="insertSonsult">
+		insert into consult values (consult_id,#{con_dept},#{con_name},#{con_mobile},#{con_time},#{title},#{content},"0")	
+	</insert>
+	
+	<!-- 咨询管理查询 -->
+	<select id="queryConsult" resultType="map">
+		select consult_id,con_title,con_dept,con_name,con_time,state from consult
+		<where>
+			<if test="con_title != null and con_title != '' ">
+				and con_title like '%${con_title}%'
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				and con_time &gt; #{startTime}
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				and con_time &lt; #{endTime}
+			</if>
+			<if test="state != null and state != '' ">
+				and state = #{state}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询咨询人信息 -->
+	<select id="queryConsultId" resultType="map">
+		select consult_id,con_dept,con_name,con_mobile,con_time,con_title,con_content from consult where consult_id = #{consult_id}
+	</select>
+	
+	<!-- 添加回复人信息 -->
+	<insert id="insertReply">
+		insert into consult_reply values (reply_id,#{consult_id},#{reply_dept},#{replyer},NOW(),#{reply_Content})
+	</insert>
+	
+	<!-- 修改咨询状态 -->
+	<update id="updateReply">
+		update consult set state='1' where consult_id = #{consult_id}
+	</update>
+	
+	<!-- 查询咨询信息(首页) -->
+	<select id="myconsult" resultType="map">
+		select consult_id,con_title,state,con_time from consult where con_name = #{con_name}
+		
+	</select>
+	
+	<!-- 查询咨询信息(用户查询) -->
+ 	<select id="con_rep" resultType="com.soft.entity.Consult_r">
+		select t1.consult_id,t1.con_dept,t1.con_name,t1.con_mobile,t1.con_time,t1.con_title,t1.con_content,t1.state,t2.reply_content from consult t1
+		left join
+		consult_reply t2
+		on t1.consult_id = t2.consult_id
+		where t1.consult_id = #{consult_id}
+	</select> 
+	
+</mapper>

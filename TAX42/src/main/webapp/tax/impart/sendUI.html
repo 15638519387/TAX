@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="../../js/jquery/jquery-3.1.1.min.js"></script>
+    <link href="../../css/skin1.css" rel="stylesheet" type="text/css" />
+    <title>易告知管理</title>
+    <script type="text/javascript" charset="UTF-8" src="../../js/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="../../js/ueditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="UTF-8" src="../../js/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+    <script>
+        //实例化UE
+   		window.UEDITOR_HOME_URL = "../../js/ueditor/";
+    	var ue = UE.getEditor('editor');
+    </script>
+</head>
+<body class="rightBody">
+<form id="form" name="form" action="listUI.html" method="post" enctype="multipart/form-data">
+    <div class="p_d_1">
+        <div class="p_d_1_1">
+            <div class="content_info">
+    <div class="c_crumbs"><div><b></b><strong>易告知管理</strong>&nbsp;-&nbsp;发送记录</div></div>
+    <div class="tableH2">发送记录</div>
+    <table id="baseInfo" width="100%" align="center" class="list" border="0" cellpadding="0" cellspacing="0"  >
+          <tr>
+            <td class="tdBg"  width="200px">标题：</td>
+            <td>催办XXX的通知</td>
+            <td class="tdBg"  width="20px">类型：</td>
+            <td>催办</td>
+        </tr>
+        <tr>
+            <td class="tdBg" width="200px">发送方式：</td>
+            <td>短信，电子邮件</td>
+            <td class="tdBg" width="20px">上传文档：</td>
+            <td><a href="#">发送手机、邮箱.xls</a></td>
+        </tr>
+        <tr>
+            <td class="tdBg" width="200px">备注：</td>
+            <td colspan="3"></td>
+        </tr>
+        <tr>
+            <td class="tdBg" width="200px">发送内容：</td>
+            <td colspan="3"  style="width:90%;height:160px;">请与XX年XX月XX日到XX办理XX</td>
+        </tr>
+        
+    </table>
+     <div class="search_art">
+                    <li>
+                                          手机号码：<input stype="text">
+                    </li>
+					<li>
+                        发送方式：<select name="item.dealDept">
+                          <option>全部</option>
+                          <option>手机号码</option>
+                          <option>邮箱</option>
+                          </select>
+                    </li>
+					<li>
+                        是否已发送：
+                          <!--<s:select name="item.dealDept" list="#{'':'全部','部门A':'部门A','部门B':'部门B'}"/>-->
+                          <select name="item.dealDept">
+                          <option>全部</option>
+                          <option>已发送</option>
+                          <option>未发送</option>
+                          </select>
+                      
+                    </li>
+                    <li><input type="button" class="s_button" value="搜 索" onclick="doSearch()"/></li>
+        
+                </div>
+      <table id="impart2" width="100%" align="center" class="list" border="0" cellpadding="0" cellspacing="0"  >
+        <tr>
+            <td class="tdBg" width="200px">手机号码/电子邮箱</td>
+            <td  class="tdBg" width="200px">发送方式</td>
+            <td  class="tdBg" width="200px">是否已发送</td>
+            <td  class="tdBg" width="200px">发送结果</td>
+            <td  class="tdBg" width="200px">发送时间</td>
+        </tr>
+        <tr>
+            <td>1222155555</td>
+            <td>手机</td>
+            <td>已发送</td>
+            <td>成功</td>
+            <td>2105-12-1 10:2</td>
+        </tr>
+        <tr>
+        	<td>1222155555@qq.com</td>
+            <td>电子邮箱</td>
+            <td>已发送</td>
+            <td>成功</td>
+            <td>2105-12-1 10:2</td>
+        </tr>
+    </table>
+    
+    <table width="100%" class="pageDown" border="0" cellspacing="0"
+			cellpadding="0">
+			<tr>
+				<td align="right">
+                 	总共1条记录，当前第 1 页，共 1 页 &nbsp;&nbsp;
+                            <a href="#">上一页</a>&nbsp;&nbsp;<a href="#">下一页</a>
+					到&nbsp;<input type="text" style="width: 30px;" onkeypress="if(event.keyCode == 13){doGoPage(this.value);}" min="1"
+					max="" value="1" /> &nbsp;&nbsp;
+			    </td>
+			</tr>
+		</table>	
+    <!-- 默认信息状态为发布 -->
+    <input type="hidden" name="info.infoId" value="4028eedd57c0e09b0157c0efa3b40003" id="info_infoId"/>
+    <input type="hidden" name="info.state" value="0" id="info_state"/>
+    <div class="tc mt20">
+        <input type="submit" class="btnB2" value="保存" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button"  onclick="javascript:history.go(-1)" class="btnB2" value="返回" />
+    </div>
+    </div></div></div>
+</form>
+</body>
+</html>

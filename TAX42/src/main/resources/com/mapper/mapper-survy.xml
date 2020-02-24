@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.dao.SurvyDao">
+
+	<!-- 添加调查信息并返回id -->
+	<insert id="insertSurvy" parameterType="map" >
+		<selectKey keyProperty="ss_id" resultType="java.lang.Integer"
+			order="AFTER">
+			select ss_id from service_survy order by ss_id desc limit 1
+		</selectKey>
+		insert into
+		service_survy(ss_title,ss_starttime,ss_endtime,ss_state,ss_dept,ss_applyer,ss_applytime)
+		values
+		(#{ss_title},#{ss_starttime},#{ss_endtime},#{ss_state},#{ss_dept},#{ss_applyer},#{ss_applytime})
+	</insert>
+	
+	<!-- 插入题目 -->
+	<insert id="insertSurvy2">
+		insert into survy_questions(ss_id,ss_no,sq_title,ss_type,ss_choice)
+		values
+		<foreach collection="list" item="sq" separator=",">
+			(
+				#{sq.ss_id},#{sq.ss_no},#{sq.sq_title},#{sq.ss_type},#{sq.ss_choice}
+			)
+		</foreach>
+	</insert>
+	
+	<!-- 查询调查信息 -->
+	<select id="querySurvy" resultType="map">
+		select ss_id,ss_title,ss_starttime,ss_endtime,ss_applyer,ss_state from service_survy
+		<where>
+			<if test="ss_title != null and ss_title != '' ">
+				and ss_title = #{ss_title}
+			</if>
+			<if test="ss_starttime != null and ss_starttime != '' ">
+				and ss_starttime &gt; #{ss_starttime}
+			</if>
+			<if test="ss_endtime != null and ss_endtime != '' ">
+				and ss_endtime &lt; #{ss_endtime}
+			</if>
+			<if test="ss_state != null and ss_state != '' ">
+				and ss_state = #{ss_state}
+			</if>
+			
+		</where>
+	</select>
+	
+	<!-- 修改调查是否有效 -->
+ 	<update id="updateState" >
+		update service_survy set 
+			<if test="ss_state ==0 ">
+				ss_state='1'
+			</if>
+			<if test="ss_state ==1 ">
+				ss_state='0'
+			</if>
+		where ss_id = #{ss_id}
+	</update> 
+	
+	<!-- 删除子表信息 -->
+	<delete id="deleteSurvy">
+		delete from survy_questions where ss_id = #{ss_id}
+	</delete>
+	<!-- 删除主表信息 -->
+	<delete id="deleteSurvy2">
+		delete from service_survy where ss_id = #{ss_id}
+	</delete>
+ 	
+ 	<!-- 查询数据(工作主页) -->
+	<select id="querySy" resultType="com.soft.entity.SurvyYm">
+		select ss_id,ss_title,ss_state,ss_starttime from service_survy
+	</select>
+	
+	<!-- 问卷调查 -->
+	<select	id="querydc" resultType="map">
+		select ss_id,ss_no,sq_title,ss_choice,ss_type from survy_questions where ss_id = #{ss_id}
+	</select>
+	
+	<insert id="insertRecord">
+		insert into survy_record values (#{ss_id},#{ss_no},#{sq_answer})
+	</insert>
+</mapper>

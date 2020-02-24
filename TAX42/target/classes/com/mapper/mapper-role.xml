@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.RoleDao">
+
+      <!-- role表的全查询 -->
+     <select id = "roleList" resultType = "map">
+          <if test=" name != null and name !=''">
+		         select t1.role_id,t1.name,t1.state,t1.code from (
+		  </if>
+          select t1.role_id,t1.name,t1.state,GROUP_CONCAT(t2.code separator',') as code
+		  from role t1,role_privilege t2
+		  where t1.role_id = t2.role_id
+		  group by t1.role_id
+		      <if test=" name != null and name !=''">
+		          ) t1  where t1.name like '%${name}%'
+		      </if>
+		   order by t1.role_id
+     </select>
+     
+     <!-- role表的全添加 -->
+     <insert id = "roleInsert">
+         INSERT INTO `role` (name,state)VALUES (#{name},#{state})
+     </insert>
+     
+     <!-- role_privilege表的全添加 -->
+     <insert id = "role_privilegeInsert">
+          INSERT INTO `role_privilege` VALUES 
+          <foreach collection="arg0" item = "map" separator=",">
+              (#{arg1},#{map})
+          </foreach>
+     </insert>
+     
+     <!-- 查询role表的id -->
+     <select id = "roleIdquery" resultType = "int">
+         SELECT role_id FROM `role` where `name` = #{name} 
+     </select>
+     
+     <!-- 带个查询角色 -->
+     <select id = "edit" resultType = "map">
+         select t1.role_id,t1.name,t1.state,t1.code from (
+          select t1.role_id,t1.name,t1.state,GROUP_CONCAT(t2.code separator',') as code
+		  from role t1,role_privilege t2
+		  where t1.role_id = t2.role_id
+		  group by t1.role_id ) t1  where t1.role_id = #{id} 
+     </select>
+     
+     <!-- role修改 -->
+     <update id = "roleUpDate">
+        update role set name = #{arg1.name} , state = #{arg1.state} where role_id = #{arg0} 
+     </update>
+     
+     <!-- role_role_privilege删除 -->
+     <delete id = "role_privilegedel">
+        delete from role_privilege where code in (
+	        <foreach collection="arg1" item = "list" separator=",">
+	              #{list}
+	          </foreach>)and role_id = #{arg0}
+     </delete>
+     
+     <delete id = "role_pdel">
+        delete from role_privilege  where role_id = #{id } 
+     </delete>
+     
+     <delete id = "role_pdels">
+        delete from role_privilege  where role_id in(
+        <foreach collection = "list" item = "sid" separator=",">
+	             #{sid }
+	    </foreach>
+	           )
+     </delete>
+     
+     <delete id = "del">
+       delete from role where role_id = #{id }
+     </delete>
+     
+     <delete id = "dels">
+       delete from role where
+            role_id in (
+            <foreach collection = "list" item = "sid" separator=",">
+              #{sid }
+            </foreach>
+            )
+     </delete>
+</mapper>

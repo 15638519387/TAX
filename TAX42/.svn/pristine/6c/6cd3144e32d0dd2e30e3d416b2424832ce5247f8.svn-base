@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.RegistDao">
+   
+   <!-- 注册-->
+   <insert id = "userInsert">
+       insert into user (name , account ,password ,headImg ,gender ,email ,
+         mobile , birthday , state , memo)values(
+         #{name},#{account},#{password},#{headImg},
+         #{gender},#{email},#{mobile},STR_TO_DATE(#{birthday},'%Y-%m-%d'),'1',#{memo}
+         )
+   </insert>
+   
+   <!-- 登陆验证 -->
+   <select id = "userPass" resultType = "map">
+        select * from user where account = #{arg0} and password = #{arg1}
+   </select>
+   
+   <!-- 查询用户角色 -->
+   <select id= "role_id" resultType = "map">
+      select t1.user_id , t2.code from user_role t1 , role_privilege t2 where t1.role_id =t2.role_id and t1.user_id=#{id}
+   </select>
+</mapper>

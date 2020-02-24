@@ -1,0 +1,81 @@
+<web-app version="3.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+
+    
+    <!-- 加载spring容器 -->
+     <listener>
+         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+     </listener>
+     
+     <!-- 加载自定义路径下的spring容器 -->
+     <context-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>classpath:spring-*.xml</param-value>
+     </context-param>
+   
+     <!-- 加载springMVC容器 -->
+     <servlet>
+        <servlet-name>springMVC</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- 加载自定义下的springMVC -->
+        <init-param>
+             <param-name>contextConfigLocation</param-name>
+             <param-value>classpath:spring-mvc.xml</param-value>
+        </init-param>
+        
+        <load-on-startup>1</load-on-startup>
+     </servlet>
+     
+     <servlet-mapping>
+         <servlet-name>springMVC</servlet-name>
+         <url-pattern>/</url-pattern>
+     </servlet-mapping>
+     
+     <!--使用拦截器  解决请求/响应乱码 -->
+        <filter>
+             <filter-name>encoding</filter-name>
+             <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+             <init-param>
+                  <param-name>encoding</param-name>
+                  <param-value>UTF-8</param-value>
+             </init-param>
+             
+             <init-param>
+                   <param-name>forceRequestEncoding</param-name>
+                   <param-value>true</param-value>
+             </init-param>
+             
+             <init-param>
+                   <param-name>forceResponseEncoding</param-name>
+                   <param-value>true</param-value>
+             </init-param>
+        </filter>
+        
+        <filter-mapping>
+             <filter-name>encoding</filter-name>
+             <url-pattern>/*</url-pattern>
+        </filter-mapping>
+        
+        <!--登陆过滤  -->
+        <filter>
+            <filter-name>onFilter</filter-name>
+            <filter-class>com.soft.filter.LoginFileter</filter-class>
+        </filter>
+        <filter-mapping>
+            <filter-name>onFilter</filter-name>
+            <url-pattern>/home/*</url-pattern>
+        </filter-mapping>
+        
+        <!-- 后台权限判定 -->
+        <filter>
+            <filter-name>houFilter</filter-name>
+            <filter-class>com.soft.filter.FrameFilter</filter-class>
+        </filter>
+        <filter-mapping>
+            <filter-name>houFilter</filter-name>
+            <url-pattern>/tax/*</url-pattern>
+        </filter-mapping>
+</web-app>

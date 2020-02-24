@@ -1,0 +1,17 @@
+log4j.rootLogger = WARN, console
+################################控制台输出################################
+#日志输出目的地
+log4j.appender.console = org.apache.log4j.ConsoleAppender
+
+##设置打印的一些参数
+
+###代表日志的输出方式，默认是标准输出（System.out）
+log4j.appender.console.target = System.err
+
+#日志的布局格式
+log4j.appender.console.layout = org.apache.log4j.PatternLayout
+
+#日志的输出格式
+log4j.appender.console.layout.conversionPattern = [%p] %d{YYYY-MM-dd HH:mm:ss} -> %c %m%n
+
+log4j.logger.com.soft.dao = DEBUG

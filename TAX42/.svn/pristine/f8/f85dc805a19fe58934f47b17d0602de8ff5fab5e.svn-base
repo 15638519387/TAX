@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.Subscribe_serviceDao">
+
+
+<select id="queryLike" resultType="com.soft.entity.Sub_service">
+select @rowno:=@rowno+1 as rowno,t1.*
+ from (select COUNT(DISTINCT service_id), service_id,subscriber,matter,sub_time,sub_place,sub_desc,sub_state ,b.matter_name from subscribe_service ,subscribe_matter b WHERE matter=b.matter_no GROUP BY service_id order by sub_time ) t1,
+ (select @rowno:=0) t 
+ <where>
+ <if test="rowno != null and rowno != ''">
+      and rowno LIKE '%${rowno }%'
+ </if>
+ <if test="shi != null and shi != ''">
+    and  DATE(sub_time)  >= #{shi }
+ </if>
+ <if test="jian != null and jian != ''">
+      and DATE(sub_time)  &lt;= #{jian }
+ </if>
+<if test="a != null and a != '' and a != '6' and a != 6">
+      and sub_state= #{a }
+ </if>
+ </where>
+ 
+
+</select> 
+
+
+
+
+
+</mapper>

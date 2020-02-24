@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.soft.dao.QuestionDao">
+	<insert id="insert">
+		insert into survy_questions
+			(ss_id, ss_no, sq_title, ss_type, ss_choice)
+		values
+		<foreach collection="list" item="map" separator=",">
+			(#{map.ss_id}, #{map.ss_no}, #{map.sq_title}, 
+			#{map.ss_type}, #{map.ss_choice})
+		</foreach>
+	</insert>
+	
+	<select id="selectQuestionBySSID" resultType="map">
+		select * from survy_questions where ss_id=#{id}
+	</select>
+
+</mapper>
